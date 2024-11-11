@@ -1,0 +1,94 @@
+global main "C:\Users\santi\OneDrive\Documentos\GitHub\EconAp\PS9"
+global input "$main\input"
+global output "$main\Output"
+
+
+
+
+clear all
+set seed 123 // seteamos semilla para poder replicar los resultados
+set obs 15000
+gen ganancias_estimadas = rnormal(10000,2000)
+drop if ganancias_estimadas<0
+
+gen impuestos_pagados = 0.2*ganancias_estimadas + rnormal(0,500)
+drop if impuestos_pagados<0
+
+
+
+
+**************************************************************************************************
+
+
+local i=1
+mat resultados = J(50,4,.)
+
+timer on 1 
+
+foreach efecto in 0.01 0.025 0.05 0.075 0.1{
+	forvalues size = 1000(1000)10000 {
+		mat R = J(500,2,.) 
+
+			forvalues x=1(1)500 {
+				preserve
+
+				sample `size' , count
+
+				gen temp = runiform()
+				gen T=0
+				replace T = 1 if temp<0.5
+
+
+				replace impuestos_pagados = impuestos_pagados * (1+`efecto') if T==1
+
+				reg impuestos_pagados T, robust
+
+				mat R[`x',1]=_b[T]/_se[T]
+
+				restore
+			}
+
+	preserve
+	clear
+	svmat R
+	gen reject = 0
+	replace reject = 1 if (R1>1.65)
+	drop if reject==.
+	sum reject
+	scalar media = r(mean)
+
+	mat resultados[`i',3] = `efecto'
+	mat resultados[`i',2] = media
+	mat resultados[`i',1] = `size'
+	restore
+
+	local i=`i'+1
+	}
+}
+
+timer off 1
+timer list 1
+
+*184 segundos
+clear 
+svmat resultados
+
+rename resultados1 sample_size
+rename resultados2 st_power
+rename resultados3 efecto
+
+replace st_power=round(st_power,.01)
+separate st_power, by(efecto)
+
+*******************************************************************************
+
+
+twoway (connected st_power1 sample_size) (connected st_power2 sample_size) ///
+(connected st_power3 sample_size) (connected st_power4 sample_size) ///
+(connected st_power5 sample_size), ytitle("Power") ///
+xtitle("Number of observations") ///
+legend(label(1 "1%") label(2 "2.5%") label(3 "5%") label(4 "7.5%") label(5 "10%")) ///
+legend(rows(1) title("Effect", size(small)) pos(6) ring(1)) xscale(titlegap(3)) yscale(titlegap(3)) 
+
+
+graph export "C:\Users\santi\OneDrive\Documentos\GitHub\EconAp\PS9\Output\Graph 1.png", as(png) name("Graph"), replace
