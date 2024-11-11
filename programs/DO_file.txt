@@ -92,3 +92,25 @@ legend(rows(1) title("Effect", size(small)) pos(6) ring(1)) xscale(titlegap(3)) 
 
 
 graph export "C:\Users\santi\OneDrive\Documentos\GitHub\EconAp\PS9\Output\Graph 1.png", as(png) name("Graph"), replace
+
+
+
+
+
+******************************************************************************************************************************
+******************************************************************************************************************************
+
+*Punto 2¨*
+
+
+clear all
+set seed 123 // seteamos semilla para poder replicar los resultados
+set obs 15000
+gen ganancias_estimadas = rnormal(10000,2000)
+drop if ganancias_estimadas<0
+
+gen impuestos_pagados = 0.2*ganancias_estimadas + rnormal(0,5000) 
+drop if impuestos_pagados<0
+
+**************************************************************************************************
+
