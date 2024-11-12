@@ -347,4 +347,24 @@ rename resultados3 efecto
 replace st_power=round(st_power,.01)
 separate st_power, by(efecto)
 
+*******************************************************************************
+
+
+twoway (connected st_power1 sample_size) (connected st_power2 sample_size) ///
+(connected st_power3 sample_size) (connected st_power4 sample_size) ///
+(connected st_power5 sample_size), ytitle("Power") ///
+xtitle("Number of observations") ///
+legend(label(1 "1%") label(2 "2.5%") label(3 "5%") label(4 "7.5%") label(5 "10%")) ///
+legend(rows(1) title("Effect", size(small)) pos(6) ring(1)) xscale(titlegap(3)) yscale(titlegap(3)) 
+
+graph export "C:\Users\santi\OneDrive\Documentos\GitHub\EconAp\PS9\Output\Graph punto 3 20%.png", as(png) name("Graph")
+
+
+
+******************************************************************************************************************************
+******************************************************************************************************************************
+
+*Punto 4*
+
+
 
