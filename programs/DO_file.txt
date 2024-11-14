@@ -376,9 +376,6 @@ gen impuestos_pagados = 0.2*ganancias_estimadas + rnormal(0,500)
 drop if impuestos_pagados<0
 
 
-gen ganancias_estimadas_2019 = rnormal(10000,2000)
-
-drop if ganancias_estimadas_2019<0
 
 ******************************************************************************************************************************
 
@@ -403,7 +400,7 @@ foreach efecto in 0.01 0.025 0.05 0.075 0.1{
 
 				replace impuestos_pagados = impuestos_pagados * (1+`efecto') if T==1
 
-				reg impuestos_pagados T ganancias_estimadas_2019, robust
+				reg impuestos_pagados T ganancias_estimadas, robust
 
 				mat R[`x',1]=_b[T]/_se[T]
 
@@ -454,4 +451,4 @@ legend(label(1 "1%") label(2 "2.5%") label(3 "5%") label(4 "7.5%") label(5 "10%"
 legend(rows(1) title("Effect", size(small)) pos(6) ring(1)) xscale(titlegap(3)) yscale(titlegap(3)) 
 
 
-graph export "C:\Users\santi\OneDrive\Documentos\GitHub\EconAp\PS9\Output\Graph punto 4.png", as(png) name("Graph")
+ graph export "C:\Users\santi\OneDrive\Documentos\GitHub\EconAp\PS9\Output\Graph punto 4.png", as(png) name("Graph")
